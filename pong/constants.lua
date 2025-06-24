@@ -1,0 +1,21 @@
+-- size of our actual window
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
+
+-- paddle settings
+PADDLE_X = 10
+PADDLE_Y = 30
+PADDLE_WIDTH = 10
+PADDLE_HEIGHT = 60
+PADDLE_SPEED = 200
+
+-- ball settings
+BALL_HEIGHT = 12
+BALL_WIDTH = 12
+BALL_X = WINDOW_WIDTH / 2 - (BALL_WIDTH / 2)
+BALL_Y = WINDOW_HEIGHT / 2 - (BALL_HEIGHT / 2)
+
+-- font sizes
+SMALL_FONT = 20
+LARGE_FONT = 80
+SCORE_FONT = 60 
