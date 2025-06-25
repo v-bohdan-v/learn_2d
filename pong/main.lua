@@ -1,29 +1,36 @@
 Class = require "class"
+local controls = require "controls"
 require "Ball"
 require "constants"
 require "Paddle"
+
+-- variables
+local small_font, large_font, score_font
+local player_left, player_right, ball
+local player_left_score, player_right_score, game_state, serving_player
 
 function love.load()
     -- INITIALIZATIONS
     math.randomseed(os.time())
 
     -- initialize fotns
-    smallFont = love.graphics.newFont('font.ttf', SMALL_FONT)
-    largeFont = love.graphics.newFont('font.ttf', LARGE_FONT)
-    scoreFont = love.graphics.newFont('font.ttf', SCORE_FONT)
-    love.graphics.setFont(smallFont)
+    small_font= love.graphics.newFont('font.ttf', SMALL_FONT)
+    large_font = love.graphics.newFont('font.ttf', LARGE_FONT)
+    score_font = love.graphics.newFont('font.ttf', SCORE_FONT)
+    love.graphics.setFont(score_font)
 
     -- initialize the paddles and a ball
-    playerLeft = Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
-    playerRight = Paddle(WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_X,
+    player_left= Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
+    player_right = Paddle(WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_X,
                          WINDOW_HEIGHT - PADDLE_HEIGHT - PADDLE_Y,
                          PADDLE_WIDTH, PADDLE_HEIGHT)
     ball = Ball(BALL_X, BALL_Y, BALL_WIDTH, BALL_HEIGHT)
 
-    playerLeftScore = 0
-    playerRightScore = 0
+    player_left_score= 0
+    player_right_score = 0
 
-    gameState = "Start"
+    game_state = "Start"
+    serving_player = 1
 
 
     love.graphics.setDefaultFilter("nearest", "nearest")
@@ -34,40 +41,36 @@ end
 function love.update(dt)
     -- MAIN LOGIC
     -- Left player moving
-    if love.keyboard.isDown('w') then
-        playerLeft.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        playerLeft.dy = PADDLE_SPEED
-    else
-        playerLeft.dy = 0
-    end
+    controls.move_paddle(player_left, "w", "s")
 
     -- Right player moving
-    if love.keyboard.isDown("up") then
-        playerRight.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown("down") then
-        playerRight.dy = PADDLE_SPEED
-    else
-        playerRight.dy = 0
-    end
+    controls.move_paddle(player_right, "up", 'down')
+
 
     -- Game start and throw the ball
-    if love.keyboard.isDown('return') and gameState == "Start" then
-        gameState = "Play"
-        ball.dy = math.random(-220, 220) * 5
-        ball.dx = math.random(-200, 200) * 5
+    if love.keyboard.isDown('return') and game_state == "Start" then
+        game_state = "Play"
+        ball.dy = math.random(-220, 220)
+        serving_player = math.random(1, 2)
+        if serving_player == 2 then
+            print("Right")
+            ball.dx = math.random(140, 200)
+        else
+            print("Left")
+            ball.dx = -math.random(140, 200)
+        end
     end
 
     -- update objects
-    playerLeft:update(dt)
-    playerRight:update(dt)
+    player_left:update(dt)
+    player_right:update(dt)
     ball:update(dt)
 end
 
 function love.draw()
     -- DRAWING THE OBJECTS
-    playerLeft:render()
-    playerRight:render()
+    player_left:render()
+    player_right:render()
     ball:render()
     displayScore()
 end
@@ -80,7 +83,7 @@ function love.keypressed()
 end
 
 function displayScore()
-    love.graphics.setFont(scoreFont)
-    love.graphics.print(tostring(playerLeftScore), WINDOW_WIDTH / 2 - SCORE_FONT * 3.5, 40)
-    love.graphics.print(tostring(playerRightScore), WINDOW_WIDTH / 2 + SCORE_FONT * 2.5, 40)
+    love.graphics.setFont(score_font)
+    love.graphics.print(tostring(player_left_score), WINDOW_WIDTH / 2 - SCORE_FONT * 3.5, 40)
+    love.graphics.print(tostring(player_right_score), WINDOW_WIDTH / 2 + SCORE_FONT * 2.5, 40)
 end
