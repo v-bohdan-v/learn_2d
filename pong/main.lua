@@ -1,12 +1,13 @@
 Class = require "class"
 local controls = require "controls"
-require "Ball"
+require "ball"
 require "constants"
-require "Paddle"
+require "paddle"
+require "net"
 
 -- variables
 local small_font, large_font, score_font
-local player_left, player_right, ball
+local player_left, player_right, ball, net
 local player_left_score, player_right_score, game_state, serving_player
 
 function love.load()
@@ -25,6 +26,7 @@ function love.load()
                          WINDOW_HEIGHT - PADDLE_HEIGHT - PADDLE_Y,
                          PADDLE_WIDTH, PADDLE_HEIGHT)
     ball = Ball(BALL_X, BALL_Y, BALL_WIDTH, BALL_HEIGHT)
+    net = NetRect(RECT_X, RECT_Y, RECT_WIDTH, RECT_HEIGHT)
 
     player_left_score= 0
     player_right_score = 0
@@ -48,17 +50,20 @@ function love.update(dt)
 
 
     -- Game start and throw the ball
-    if love.keyboard.isDown('return') and game_state == "Start" then
+    if love.keyboard.isDown("return") and game_state == "Start" then
         game_state = "Play"
         ball.dy = math.random(-220, 220)
         serving_player = math.random(1, 2)
         if serving_player == 2 then
-            print("Right")
-            ball.dx = math.random(140, 200)
+            ball.dx = math.random(300, 400)
         else
-            print("Left")
-            ball.dx = -math.random(140, 200)
+            ball.dx = -math.random(300, 400)
         end
+    end
+
+    if love.keyboard.isDown("space") then
+        ball:reset()
+        game_state = "Start"
     end
 
     -- update objects
@@ -72,6 +77,11 @@ function love.draw()
     player_left:render()
     player_right:render()
     ball:render()
+    local segmentCount = WINDOW_HEIGHT / (RECT_HEIGHT + SPACER)
+    for i = 0, segmentCount do
+        local y = i * (RECT_HEIGHT + SPACER)
+        net:render(y)
+    end
     displayScore()
 end
 
