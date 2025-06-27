@@ -24,3 +24,27 @@ function Ball:update(dt)
     self.x = self.x + self.dx * dt
     self.y = self.y + self.dy * dt
 end
+
+function Ball:is_collides_paddle(paddle)
+    if self.x >= paddle.x + paddle.width or paddle.x >= self.x + self.width then
+        return false
+    end
+
+    if self.y >= paddle.y + paddle.height or paddle.y >= self.y + self.height then
+        return false
+    end
+
+    return true
+end
+
+function Ball:collides_border()
+    if self.y <= 0 then
+        self.y = 0
+        self.dy = self.dy
+    end
+
+    if self.y >= WINDOW_HEIGHT then
+        self.y = WINDOW_HEIGHT - BALL_HEIGHT
+        self.dy = -self.dy
+    end
+end
