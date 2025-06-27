@@ -66,6 +66,17 @@ function love.update(dt)
         game_state = "Start"
     end
 
+    if ball:is_collides_paddle(player_left) then
+            ball.x = player_left.x + player_left.width + ball.width
+            ball.dx = -ball.dx * 1.03
+            ball.dy = ball.dy * 2.5
+    end
+
+    if ball:is_collides_paddle(player_right) then
+        ball.x = player_right.x - 5
+        ball.dx = -ball.x * 1.03
+    end
+
     -- update objects
     player_left:update(dt)
     player_right:update(dt)
