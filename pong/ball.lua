@@ -37,14 +37,30 @@ function Ball:is_collides_paddle(paddle)
     return true
 end
 
-function Ball:collides_border()
-    if self.y <= 0 then
-        self.y = 0
-        self.dy = self.dy
+function Ball:is_collides_cell()
+    if self.y >= 0 then
+        return false
     end
+    return true
+end
 
-    if self.y >= WINDOW_HEIGHT then
-        self.y = WINDOW_HEIGHT - BALL_HEIGHT
-        self.dy = -self.dy
+function Ball:is_collides_floor()
+    if self.y + self.width <= WINDOW_HEIGHT then
+        return false
     end
+    return true
+end
+
+function Ball:is_collides_left_side()
+    if self.x >= 0 then
+        return false
+    end
+    return true
+end
+
+function Ball:is_collides_right_side()
+    if self.x + self.width <= WINDOW_WIDTH then
+        return false
+    end
+    return true
 end
