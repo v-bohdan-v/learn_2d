@@ -67,14 +67,46 @@ function love.update(dt)
     end
 
     if ball:is_collides_paddle(player_left) then
-            ball.x = player_left.x + player_left.width + ball.width
-            ball.dx = -ball.dx * 1.03
-            ball.dy = ball.dy * 2.5
+            ball.x = player_left.x + player_left.width + 5
+            ball.dx = -ball.dx * 1.05
+            if ball.y < player_left.y + player_left.height / 2 then
+                ball.dy = -math.random(100, 200) * (player_left.y + player_left.height / 2) / ball.y
+            else
+                ball.dy =  math.random(100, 200) * (player_left.y + player_left.height) / ball.y
+            end
     end
 
     if ball:is_collides_paddle(player_right) then
-        ball.x = player_right.x - 5
-        ball.dx = -ball.x * 1.03
+        ball.x = player_right.x - (ball.width + 5)
+        ball.dx = -ball.dx * 1.05
+
+        if ball.y < player_right.y + player_right.height / 2 then
+            ball.dy = -math.random(100, 200) * (player_right.y + (player_right.height / 2)) / ball.y
+        else
+            ball.dy = math.random(100, 200) * (player_right.y + player_right.height) / ball.y
+        end
+    end
+
+    if ball:is_collides_cell() then
+        print("Collides cell!")
+        ball:reset()
+    end
+
+    if ball:is_collides_floor() then
+        print("Collides floor!")
+        ball:reset()
+    end
+
+    if ball:is_collides_left_side() then
+        ball:reset()
+        game_state = "Start"
+        player_right_score = player_right_score + 1
+    end
+
+    if ball:is_collides_right_side() then
+        ball:reset()
+        game_state = "Start"
+        player_left_score = player_left_score + 1
     end
 
     -- update objects
