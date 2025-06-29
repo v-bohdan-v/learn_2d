@@ -37,7 +37,7 @@ function Ball:is_collides_paddle(paddle)
     return true
 end
 
-function Ball:is_collides_cell()
+function Ball:is_collides_ceil()
     if self.y >= 0 then
         return false
     end
