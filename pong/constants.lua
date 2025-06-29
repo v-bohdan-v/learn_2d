@@ -6,7 +6,7 @@ WINDOW_HEIGHT = 720
 PADDLE_X = 10
 PADDLE_Y = 30
 PADDLE_WIDTH = 10
-PADDLE_HEIGHT = 60
+PADDLE_HEIGHT = 80
 PADDLE_SPEED = 400
 
 -- ball settings
@@ -24,5 +24,11 @@ SPACER = RECT_HEIGHT / 2
 
 -- font sizes
 SMALL_FONT = 20
-LARGE_FONT = 80
+LARGE_FONT = 60
 SCORE_FONT = 60
+
+-- states of game
+WELCOME_SCREEN = "Welcome Screen"
+PLAYING = "Playing"
+SERVE = "Serve"
+FINISH = "FINISH"
