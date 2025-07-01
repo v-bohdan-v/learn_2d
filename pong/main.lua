@@ -7,7 +7,7 @@ require "net"
 require "constants"
 
 -- variables
-local large_font, score_font
+local large_font, score_font, sounds
 local player_left, player_right, ball, net
 local player_left_score, player_right_score, game_state, serve_count, serving_player, winner, curr_speed
 
@@ -22,6 +22,12 @@ function love.load()
     large_font = love.graphics.newFont('font.ttf', LARGE_FONT)
     score_font = love.graphics.newFont('font.ttf', SCORE_FONT)
     love.graphics.setFont(score_font)
+
+    sounds = {
+        ["paddle"] = love.audio.newSource("sounds/paddle.wav", "static"),
+        ["border"] = love.audio.newSource("sounds/border.wav", "static"),
+        ["lose"] = love.audio.newSource("sounds/lose.wav", "static"),
+    }
 
     -- initialize the paddles and a ball
     player_left= Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -75,36 +81,42 @@ function love.update(dt)
         ball.x = player_left.x + player_left.width + ball.width
         ball.dx = -ball.dx * SPEED_MULTIPLIER
         game.set_ball_direction_when_collides_paddle(ball, player_left)
+        sounds["paddle"]:play()
     end
 
     if ball:is_collides_paddle(player_right) then
         ball.x = player_right.x - ball.width
         ball.dx = -ball.dx * SPEED_MULTIPLIER
         game.set_ball_direction_when_collides_paddle(ball, player_right)
+        sounds["paddle"]:play()
     end
 
     -- If ball collides the ceil, then it should go to the floor
     if ball:is_collides_ceil() then
         ball.y = 0
         ball.dy = -ball.dy
+        sounds["border"]:play()
     end
 
     -- If ball collides the floor, then it should go to the ceil
     if ball:is_collides_floor() then
         ball.y = WINDOW_HEIGHT - ball.height
         ball.dy = -ball.dy
+        sounds["border"]:play()
     end
 
     if ball:is_collides_left_side() then
         player_right_score= game.count_score(ball, player_right_score)
         game_state = SERVE
         serve_count = serve_count + 1
+        sounds["lose"]:play()
     end
 
     if ball:is_collides_right_side() then
         player_left_score = game.count_score(ball, player_left_score)
         game_state = SERVE
         serve_count = serve_count + 1
+        sounds["lose"]:play()
     end
 
     -- update objects
