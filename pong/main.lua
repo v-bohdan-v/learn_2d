@@ -7,16 +7,15 @@ require "net"
 require "constants"
 
 -- variables
-local small_font, large_font, score_font
+local large_font, score_font
 local player_left, player_right, ball, net
-local player_left_score, player_right_score, game_state, serve_count, serving_player, winner
+local player_left_score, player_right_score, game_state, serve_count, serving_player, winner, curr_speed
 
 function love.load()
     -- INITIALIZATIONS
     math.randomseed(os.time())
 
     -- initialize fotns
-    small_font= love.graphics.newFont('font.ttf', SMALL_FONT)
     large_font = love.graphics.newFont('font.ttf', LARGE_FONT)
     score_font = love.graphics.newFont('font.ttf', SCORE_FONT)
     love.graphics.setFont(score_font)
@@ -29,12 +28,9 @@ function love.load()
     ball = Ball(BALL_X, BALL_Y, BALL_WIDTH, BALL_HEIGHT)
     net = NetRect(RECT_X, RECT_Y, RECT_WIDTH, RECT_HEIGHT)
 
-    player_left_score= 0
-    player_right_score = 0
+    player_left_score, player_right_score, serving_player, serve_count = game.reset_values()
 
     game_state = WELCOME_SCREEN
-    serving_player = 0
-    serve_count = 0
 
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.graphics.setBackgroundColor(40/250, 45/250, 52/250, 0)
@@ -44,28 +40,27 @@ end
 function love.update(dt)
     -- MAIN LOGIC
     -- Game start and throw the ball
-    if serve_count == 3 then
+    if serve_count == 11 then
         game_state = FINISH
         winner = game.get_winner(player_left_score, player_right_score)
     end
 
     if love.keyboard.isDown("return") and (game_state == WELCOME_SCREEN or game_state == FINISH) then
         game_state = PLAYING
-        serving_player = math.random(1, 2)
+        serving_player = game.set_first_serve()
         serve_count = serve_count + 1
-        ball.dy = math.random(-220, 220)
+        game.do_first_serve(ball, serving_player)
         if serving_player == 1 then
-           ball.dx = -math.random(300, 400)
+            curr_speed = -BASE_SPEED
         else
-           ball.dx = math.random(300, 400)
+            curr_speed = BASE_SPEED
         end
     end
 
     if game_state == SERVE then
         game_state = PLAYING
         ball:reset()
-        ball.dy = math.random(-220, 220)
-        ball.dx = -math.random(300, 400)
+        game.process_serving(ball, curr_speed, serve_count)
     end
 
     -- Left player moving
@@ -74,14 +69,14 @@ function love.update(dt)
     controls.move_paddle(player_right, "up", 'down')
 
     if ball:is_collides_paddle(player_left) then
-        ball.x = player_left.x + player_left.width + 5
-        ball.dx = -ball.dx * 1.05
+        ball.x = player_left.x + player_left.width + ball.width
+        ball.dx = -ball.dx * SPEED_MULTIPLIER
         game.set_ball_direction_when_collides_paddle(ball, player_left)
     end
 
     if ball:is_collides_paddle(player_right) then
-        ball.x = player_right.x - (ball.width + 5)
-        ball.dx = -ball.dx * 1.05
+        ball.x = player_right.x - ball.width
+        ball.dx = -ball.dx * SPEED_MULTIPLIER
         game.set_ball_direction_when_collides_paddle(ball, player_right)
     end
 
@@ -98,12 +93,14 @@ function love.update(dt)
     end
 
     if ball:is_collides_left_side() then
-        player_right_score, game_state = game.count_score(ball, player_right_score)
+        player_right_score= game.count_score(ball, player_right_score)
+        game_state = SERVE
         serve_count = serve_count + 1
     end
 
     if ball:is_collides_right_side() then
-        player_left_score, game_state = game.count_score(ball, player_left_score)
+        player_left_score = game.count_score(ball, player_left_score)
+        game_state = SERVE
         serve_count = serve_count + 1
     end
 
@@ -120,7 +117,7 @@ function love.draw()
        game.display_welcome_screen(large_font)
     elseif game_state == FINISH then
         game.display_finish_screen(winner, large_font)
-        player_left_score, player_right_score, serve_count, serving_player = 0, 0, 0, 0
+        player_left_score, player_right_score, serve_count, serving_player = game.reset_values()
     else
         -- render the paddles, ball and the net
         player_left:render()
