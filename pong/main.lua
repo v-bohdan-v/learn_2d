@@ -13,6 +13,9 @@ local player_left_score, player_right_score, game_state, serve_count, serving_pl
 
 function love.load()
     -- INITIALIZATIONS
+
+    love. window.setTitle("Pong")
+
     math.randomseed(os.time())
 
     -- initialize fotns
