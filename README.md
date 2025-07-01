@@ -15,7 +15,7 @@ This repository contains several simple 2D games that I'm building while learnin
 
 #### 🔹 Option 1: Run prebuilt `.exe`
 
-1. Download the archive: [`love_zip.zip`](#)
+1. Download the archive: [`pong.zip`](#)
 2. Extract it anywhere
 3. Run `pong.exe`  
    ✅ No installation required — LÖVE runtime is bundled!
