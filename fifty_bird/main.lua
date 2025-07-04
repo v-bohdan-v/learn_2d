@@ -3,11 +3,10 @@ require "bird"
 require "pipe"
 require "constants"
 
-local pipes = {}
-
 local background_scroll = 0
 local ground_scroll = 0
-local spawn_timer = 0
+
+local pipes = {} -- an array with pipe object
 
 local bird = Bird()
 
@@ -23,21 +22,30 @@ function love.update(dt)
     background_scroll = (background_scroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
     ground_scroll = (ground_scroll + GROUND_SCROLL_SPEED * dt) % (GROUND:getWidth() / 1.5)
 
-    spawn_timer = spawn_timer + dt
-    if spawn_timer > 1 then
-        table.insert(pipes, Pipe())
-        spawn_timer = 0
+    if #pipes > 0 then
+        if pipes[1].x < -PIPE_WIDTH * 2 then
+            table.remove(pipes, 1)
+        end
+    end
+
+    if #pipes < 30 then
+        local last_pipe_x = pipes[#pipes] and pipes[#pipes].x or WINDOW_WIDTH
+        local gap = PIPE_WIDTH + 100
+        table.insert(pipes, Pipe(last_pipe_x + gap))
+    end
+    print("AMOUNT OF PIPES: ", #pipes)
+
+    for i = 1, #pipes do
+        pipes[i]:update(dt)
+    end
+
+    if #pipes > 0 then
+        if pipes[1].x < -PIPE_WIDTH * 2 then
+            table.remove(pipes, 1)
+        end
     end
 
     bird:update(dt)
-
-    for k, p in pairs(pipes) do
-        p:update(dt)
-
-        if p.x < -p.width then
-            table.remove(p, k)
-        end
-    end
 
     love.keyboard.keysPressed = {}
 end
@@ -52,8 +60,10 @@ function love.draw()
         2.5 -- scale on y axis, height * 2.5
     )
 
-    for k, p in pairs(pipes) do
-        p:render()
+    for i = 1, #pipes do
+        if i > 1 and pipes[i - 1].x < WINDOW_WIDTH + PIPE_WIDTH * 1.5 then
+            pipes[i]:render()
+        end
     end
 
     love.graphics.draw(

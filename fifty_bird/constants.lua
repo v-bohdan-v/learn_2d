@@ -14,3 +14,8 @@ BACKGROUND = love.graphics.newImage("/images/background.png")
 GROUND = love.graphics.newImage("/images/ground.png")
 BIRD = love.graphics.newImage("/images/bird.png")
 PIPE = love.graphics.newImage("/images/pipe.png")
+
+-- Pipe
+GAPE = 90
+PIPE_HEIGHT = 288
+PIPE_WIDTH = 70

@@ -1,9 +1,11 @@
 Pipe = Class{}
 
-function Pipe:init()
-    self.x = WINDOW_WIDTH
-    self.y = math.random(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 10)
-    self.width = PIPE:getWidth()
+function Pipe:init(x)
+    self.x = x or WINDOW_WIDTH
+    self.y = math.random(WINDOW_HEIGHT / 2, WINDOW_HEIGHT - 2)
+    self.width = PIPE_WIDTH
+    self.height = PIPE_HEIGHT
+    self.orientation = 0
 end
 
 function Pipe:update(dt)
