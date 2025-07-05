@@ -1,83 +1,59 @@
 Class = require "class"
+-- constants
+require "constants"
+
+-- objects
+require "image"
 require "bird"
 require "pipe"
-require "constants"
+
+-- game state and state machines
+require "state_machine"
+require "states.base_state"
+require "states.play_state"
+require "states.title_screen_state"
 
 local background_scroll = 0
 local ground_scroll = 0
 
-local pipes = {} -- an array with pipe object
-
-local bird = Bird()
+local background = Image(BACKGROUND, 0, 0, 3, 2.5, 1)
+local ground = Image(GROUND, 0, WINDOW_HEIGHT - GROUND:getHeight() * 2, 6, 2, 2)
 
 
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.window.setTitle("Fifty Bird")
+
+    -- set fonts
+    small_font = love.graphics.newFont("font.ttf", SMALL_FONT)
+    medium_font = love.graphics.newFont("font.ttf", MEDIUM_FONT)
+    large_font = love.graphics.newFont("font.ttf", LARGE_FONT)
+    love.graphics.setFont(medium_font)
     love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
+
+    -- initialize state machine
+    g_state_machine = StateMachine {
+        ["title"] = function () return TitleScreenState() end,
+        ["play"] = function() return PlayState() end
+    }
+    g_state_machine:change("title")
+
     love.keyboard.keysPressed = {}
 end
 
 function love.update(dt)
-    background_scroll = (background_scroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
-    ground_scroll = (ground_scroll + GROUND_SCROLL_SPEED * dt) % (GROUND:getWidth() / 1.5)
+    background_scroll = background_scroll + BACKGROUND_SCROLL_SPEED * dt
+    ground_scroll = ground_scroll + GROUND_SCROLL_SPEED * dt
 
-    if #pipes > 0 then
-        if pipes[1].x < -PIPE_WIDTH * 2 then
-            table.remove(pipes, 1)
-        end
-    end
-
-    if #pipes < 30 then
-        local last_pipe_x = pipes[#pipes] and pipes[#pipes].x or WINDOW_WIDTH
-        local gap = PIPE_WIDTH + 100
-        table.insert(pipes, Pipe(last_pipe_x + gap))
-    end
-    print("AMOUNT OF PIPES: ", #pipes)
-
-    for i = 1, #pipes do
-        pipes[i]:update(dt)
-    end
-
-    if #pipes > 0 then
-        if pipes[1].x < -PIPE_WIDTH * 2 then
-            table.remove(pipes, 1)
-        end
-    end
-
-    bird:update(dt)
+    g_state_machine:update(dt)
 
     love.keyboard.keysPressed = {}
 end
 
 function love.draw()
-    love.graphics.draw(
-        BACKGROUND, -- image
-        -background_scroll, -- x position, each frame goes to minus, so it seems like the picture goes left
-        0, -- y position, stable
-        0, -- rotation
-        3, -- scale on x axis, width * 3
-        2.5 -- scale on y axis, height * 2.5
-    )
-
-    for i = 1, #pipes do
-        if i > 1 and pipes[i - 1].x < WINDOW_WIDTH + PIPE_WIDTH * 1.5 then
-            pipes[i]:render()
-        end
-    end
-
-    love.graphics.draw(
-        GROUND, -- image
-        -ground_scroll, -- x position, each frame goes to minus, so it seems like the picture goes left
-        WINDOW_HEIGHT - GROUND:getHeight() * 2, -- y position, stable
-        0, -- rotation
-        2 -- scale on x axis, width * 6
-        -- 1, -- scale on y axis, hegith * 1
-        -- ground:getWidth() / 2, -- ox: x-axis origin offset
-        -- 0 -- oy: without offset
-    )
-
-    bird:render()
+    background:render(background_scroll)
+    g_state_machine:render()
+    ground:render(ground_scroll)
 end
 
 function love.keypressed(key)

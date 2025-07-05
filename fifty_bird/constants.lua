@@ -5,9 +5,10 @@ WINDOW_HEIGHT = 720
 -- scroll speed
 BACKGROUND_SCROLL_SPEED = 30
 GROUND_SCROLL_SPEED = 120
-PIPE_SCROLL_SPEED = -60
+PIPE_SCROLL_SPEED = -120
+GRAVITY = 8
+JUMP = -150
 
-BACKGROUND_LOOPING_POINT = 1000
 
 -- images
 BACKGROUND = love.graphics.newImage("/images/background.png")
@@ -19,3 +20,8 @@ PIPE = love.graphics.newImage("/images/pipe.png")
 GAPE = 90
 PIPE_HEIGHT = 288
 PIPE_WIDTH = 70
+
+-- fonts
+SMALL_FONT = 8
+MEDIUM_FONT = 14
+LARGE_FONT = 60

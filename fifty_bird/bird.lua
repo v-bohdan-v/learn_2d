@@ -1,7 +1,5 @@
 Bird = Class{}
 
-local GRAVITY = 8
-
 function Bird:init()
     self.image = BIRD
     self.width = self.image:getWidth()
@@ -21,8 +19,20 @@ function Bird:update(dt)
     self.dy = self.dy + GRAVITY
 
     if love.keyboard.wasPressed("space") then
-        self.dy = -300
+        self.dy = JUMP
     end
 
     self.y = self.y + self.dy * dt
+end
+
+function Bird:is_collide(pipe)
+    if (self.x + 2) + (self.width - 4) >= pipe.x and self.x + 2 <= pipe.x + PIPE_WIDTH then
+        if ((self.y + 2) + (self.height - 4) >= pipe.y and self.y + 2 <= pipe.y + PIPE_HEIGHT) then
+            return true
+        end
+        if (self.y + 2) <= pipe.y - GAPE then
+            return true
+        end
+        return false
+    end
 end
