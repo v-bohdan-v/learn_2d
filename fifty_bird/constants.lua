@@ -7,7 +7,7 @@ BACKGROUND_SCROLL_SPEED = 30
 GROUND_SCROLL_SPEED = 120
 PIPE_SCROLL_SPEED = -120
 GRAVITY = 8
-JUMP = -150
+JUMP = -300
 
 
 -- images
@@ -17,7 +17,7 @@ BIRD = love.graphics.newImage("/images/bird.png")
 PIPE = love.graphics.newImage("/images/pipe.png")
 
 -- Pipe
-GAPE = 90
+GAPE = 100
 PIPE_HEIGHT = 288
 PIPE_WIDTH = 70
 
@@ -25,3 +25,9 @@ PIPE_WIDTH = 70
 SMALL_FONT = 8
 MEDIUM_FONT = 14
 LARGE_FONT = 60
+
+-- sounds path
+PLAY_SOUND = "/sounds/play_sound.mp3"
+BOOM_SOUND = "/sounds/boom.wav"
+JUMP_SOUND = "/sounds/jump.wav"
+SCORE_SOUND = "/sounds/score.wav"

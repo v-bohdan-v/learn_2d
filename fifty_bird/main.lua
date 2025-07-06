@@ -12,6 +12,7 @@ require "state_machine"
 require "states.base_state"
 require "states.play_state"
 require "states.title_screen_state"
+require "states.score_state"
 
 local background_scroll = 0
 local ground_scroll = 0
@@ -31,10 +32,23 @@ function love.load()
     love.graphics.setFont(medium_font)
     love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
 
+    -- set sounds
+    g_sounds = {
+        ["jump"] = love.audio.newSource(JUMP_SOUND, "static"),
+        ["explosion"] = love.audio.newSource(BOOM_SOUND, "static"),
+        ["score"] = love.audio.newSource(SCORE_SOUND, "static"),
+        ["music"] = love.audio.newSource(PLAY_SOUND, "static")
+    }
+
+    g_sounds["music"]:setLooping(true)
+    g_sounds["music"]:setVolume(0.1)
+    g_sounds["music"]:play()
+
     -- initialize state machine
     g_state_machine = StateMachine {
         ["title"] = function () return TitleScreenState() end,
-        ["play"] = function() return PlayState() end
+        ["play"] = function() return PlayState() end,
+        ["score"] = function() return ScoreState() end
     }
     g_state_machine:change("title")
 
